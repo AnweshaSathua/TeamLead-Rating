@@ -1,0 +1,174 @@
+
+<!-- HEADER with logo -->
+<header class="app-header">
+  <div class="logo">
+  <img src="assets/Logo.png" alt="Logo">
+  </div>
+  </header>
+ 
+   <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+  <div class="project-section-wrapper">
+  <div class="project-section">
+    <div class="project-header">
+      👥 Timesheet Task
+      </div>
+ <div class="project-grid">
+  
+  <!-- Project Start Date -->
+<div class="form-group">
+  <div class="date-range-container">
+    <div class="date-field">
+      <label for="date" class="date-range-label">📅 Date</label>
+      <div class="date-input-row">
+        <input type="date" id="date" formControlName="date" (change)="onDateChange($event)">
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="button" 
+          (click)="onSaveDate()">
+          <mat-icon>save</mat-icon> Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="employeeForm.get('date')?.invalid && employeeForm.get('date')?.touched" class="error-message">
+    Date is required
+  </div>
+</div>
+</div>
+ </div>
+
+ <!-- Employee Table Section (Reactive Form + Editable Rows) -->
+<div class="employee-details-card" formArrayName="employeeList">
+  <div class="employee-card-header">
+    👥 Employee Details
+  </div>
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 full-width-table">
+
+ <!-- Employee ID -->
+  <ng-container matColumnDef="employeeId">
+    <th mat-header-cell *matHeaderCellDef>👨‍💼Employee ID</th>
+    <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+      <input type="text" formControlName="employeeId" readonly>
+    </td>
+      </ng-container>
+
+      <!-- Employee Name -->
+      <ng-container matColumnDef="employeeName">
+        <th mat-header-cell *matHeaderCellDef>👨‍💼Employee Name</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+            <input type="text" formControlName="employeeName" readonly> 
+            </td>
+      </ng-container>
+
+
+      <!--Tasks -->
+      <ng-container matColumnDef="tasks">
+        <th mat-header-cell *matHeaderCellDef>📁Tasks</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+          <select formControlName="tasks" [disabled]="!editRowMap[i]" (change)="onTaskSelect(i, taskDialog)">
+              <option value="" disabled selected *ngIf="!row.get('tasks')?.value">
+                Select Task
+              </option>
+             <option *ngFor="let tasks of row.get('taskOptions')?.value" [value]="tasks">
+              {{ tasks }}
+              </option> 
+            </select>
+        </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>⏱︎ Status</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+          <input type="text" formControlName="status" readonly>          
+        </td>
+      </ng-container>
+
+      <!-- Hours -->
+      <ng-container matColumnDef="hours">
+        <th mat-header-cell *matHeaderCellDef>⏱︎ Hours</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+          <input type="text" formControlName="hours" readonly>
+        </td>
+      </ng-container>
+
+      <!-- Extra Hours -->
+      <ng-container matColumnDef="extraHours">
+        <th mat-header-cell *matHeaderCellDef>⏱︎ Extra Hours</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+          <input type="text" formControlName="extraHours" readonly>
+        </td>
+      </ng-container>
+
+
+      <!-- Rating -->
+      <ng-container matColumnDef="rating">
+        <th mat-header-cell *matHeaderCellDef>⭐ Rating</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+
+            <input type="number" formControlName="rating" placeholder="Enter rating (1-6)" min="1" max="6">
+            <div *ngIf="row.get('rating')?.touched && row.get('rating')?.invalid" class="error-message">
+              <ng-container *ngIf="row.get('rating')?.errors?.['required']">
+                Rating is required
+              </ng-container>
+              <ng-container *ngIf="row.get('rating')?.errors?.['min'] || row.get('rating')?.errors?.['max']">
+                Rating must be between 1 and 6
+              </ng-container>
+            </div>
+        </td>
+      </ng-container>
+
+      <!-- Remark -->
+      <ng-container matColumnDef="remark">
+        <th mat-header-cell *matHeaderCellDef>✏️ Remark</th>
+        <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i">
+            <input type="text" formControlName="remark" placeholder="Remarks if any"> 
+            </td>
+      </ng-container>
+
+    
+      <!-- Render Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Floating Action Buttons -->
+ <div class="fab-action-wrapper">
+<div class="fab-form-actions">
+  <button mat-raised-button class="fab-btn fab-reset" (click)="onReset()" matTooltip="Reset">
+    <mat-icon>refresh</mat-icon>
+    Reset
+  </button>
+ 
+  <button mat-raised-button class="fab-btn fab-save" type="submit" matTooltip="Submit">
+    <mat-icon>save</mat-icon>
+    Submit
+  </button>
+ 
+  <button mat-raised-button class="fab-btn fab-exit" (click)="onExit()" matTooltip="Exit">
+    <mat-icon>exit_to_app</mat-icon>
+    Exit
+  </button>
+</div> 
+</div> 
+</div>
+  
+  </form>
+
+<!-- 🟢 Task Popup Template -->
+<ng-template #taskDialog let-data>
+  <h2 mat-dialog-title>📌 {{ data.name }}</h2>
+  <mat-dialog-content>
+    <p><strong>Description:</strong> {{ data.description }}</p>
+    <p><strong>Reference:</strong> {{ data.taskReference }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>OK</button>
+  </mat-dialog-actions>
+</ng-template> 

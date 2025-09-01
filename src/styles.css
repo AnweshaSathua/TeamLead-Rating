@@ -1,0 +1,114 @@
+/* You can add global styles to this file, and also import other style files */
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+body, html {
+  background: url(assets/photobg.avif) no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+:root, .dark-mode {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* Force color for input placeholders, text, labels, and mat components */
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea,
+.dark-mode .mat-select-value,
+.dark-mode .mat-select-placeholder,
+.dark-mode .mat-slide-toggle .mat-slide-toggle-label-content,
+.dark-mode .mat-form-field-label,
+.dark-mode .mat-input-element,
+.dark-mode .mat-datepicker-toggle,
+.dark-mode .mat-datepicker-toggle-default-icon,
+.dark-mode .mat-hint {
+  color: var(--text-color) !important;
+}
+
+/* Placeholder styling */
+.dark-mode input::placeholder,
+.dark-mode select::placeholder,
+.dark-mode textarea::placeholder {
+  color: var(--text-color) !important;
+  opacity: 0.6;
+}
+
+
+/* ✅ Ensures dark text color applies to toggle label */
+.dark-mode ::ng-deep .mat-slide-toggle-label-content {
+  color: var(--text-color) !important;
+  font-weight: 500;
+}
+
+/* ✅ Style toggle thumb and bar for dark mode clarity */
+.dark-mode ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: var(--highlight-color) !important;
+}
+
+.dark-mode ::ng-deep .mat-slide-toggle-thumb {
+  background-color: white !important;
+}
+
+::ng-deep .mat-calendar {
+  border-radius: 12px;
+  background-color: var(--bg-color);
+  padding: 10px;
+  font-family: 'Roboto', sans-serif;
+}
+
+::ng-deep .mat-calendar-table {
+  border-collapse: separate !important;
+  border-spacing: 6px;
+}
+
+::ng-deep .mat-calendar-body-selected {
+  background-color: #e65100 !important; /* purple circle */
+  color: var(--text-color) !important;
+}
+
+::ng-deep .mat-calendar-body-in-range::before {
+  background: #f85726b8 !important; /* lighter purple for range */
+  border-radius: 0 !important;
+}
+
+::ng-deep .mat-calendar-body-in-range {
+  background-color: #f85726b8 !important; /* light purple */
+  color: var(--text-color) !important;
+}
+
+::ng-deep .mat-calendar-body-range-start,
+::ng-deep .mat-calendar-body-range-end {
+  background-color: #e65100 !important; /* dark purple for edge */
+  color: var(--text-color) !important;
+  border-radius: 50% !important;
+  z-index: 1;
+}
+
+::ng-deep .mat-calendar-body-cell {
+  border-radius: 50% !important;
+}
+
+::ng-deep .mat-calendar-controls {
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+::ng-deep .mat-calendar-period-button {
+  color: #e65100 !important;
+}
+
+::ng-deep .mat-calendar-next-button,
+::ng-deep .mat-calendar-previous-button {
+  color: #e65100 !important;
+}
+
+
+
