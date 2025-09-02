@@ -132,7 +132,7 @@ export class EmployeeComponent {
   
   fetchEmployees(date: string) { 
     this.http.get<any[]>
-    ('http://localhost:8080/rating/teamlead/daily/tsribatsapatro@gmail.com?date=${date}').subscribe(data => {
+    ('http://localhost:8080/api/teamlead/dashboard/{tlemail}?date=${date}').subscribe(data => {
       console.log('API returned:', data);
       this.employeeList.clear(); 
 
@@ -171,7 +171,7 @@ export class EmployeeComponent {
     this.employeeForm.markAllAsTouched();
     if (this.employeeForm.valid) {
       const formValue = { ...this.employeeForm.getRawValue() };
-      this.http.post('http://localhost:8080/rating/teamlead/daily/tsribatsapatro@gmail.com', formValue)
+      this.http.post('http://localhost:8080/rating/teamlead/daily/{tlemail}', formValue)
         .subscribe({
           next: () => alert('Data submitted successfully!'),
           error: err => {
