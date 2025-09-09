@@ -369,10 +369,11 @@ label {
 }
 
 .full-width-table td {
+  vertical-align: middle;
   padding: 6px 8px;
   text-align: center;
   box-sizing: border-box;
-  border-radius: 8px;
+  border-radius: 20px;
   border: 1px solid var(--bg-color);
   color: var(--text-color);
   background-color: var(--bg-color);
@@ -393,16 +394,9 @@ label {
   background-color: var(--bg-color);
   color: var(--text-color);
 }
-.full-width-table td input,
-.full-width-table td select,
-.full-width-table td mat-form-field {
-  width: 155px; 
-  min-width: 155px;
-  max-width: 155px;
-  box-sizing: border-box;
-}
+
 .full-width-table td mat-select {
-  width: 155px !important;
+  width: 200px !important;
 }
 
 .full-width-table input:focus, 
@@ -456,10 +450,10 @@ mat-form-field {
 /* Full-width table with minimum width to avoid collapse */
 .full-width-table {
   width: 100%;
-  min-width: 1028px; /* Adjust based on your column count */
+  min-width: 1300px; /* Adjust based on your column count */
   border-collapse: collapse;
   border: 1px solid var(--bg-color);
-  border-radius: 8px;
+  border-radius: 20px;
   color: var(--text-color);
   background-color: var(--bg-color);
 }
@@ -471,7 +465,7 @@ mat-form-field, input[matInput], mat-select, mat-slide-toggle {
   background-color: var(--bg-color);
   color: var(--text-color);
   border: 1px solid var(--bg-color);
-  border-radius: 8px;
+  border-radius: 20px;
   padding: 8px;
   box-sizing: border-box;
   font-size: 14px;
@@ -487,7 +481,7 @@ mat-form-field, input[matInput], mat-select, mat-slide-toggle {
 
 input, select {
   padding: 5px;
-  border-radius: 12px;
+  border-radius: 22px;
   border: 1px solid #ccc;
   background-color: var(--input-bg-color);
   box-shadow: none;
@@ -506,6 +500,8 @@ input[readonly], select:disabled {
   background-color: #f0f0f0;  /* light gray */
   color: #555;
   cursor: not-allowed;
+  border: 1px solid #ddd;
+  border-radius: 20px;
 }
 tr:has(input:disabled) {
   background-color: #fafafa;
@@ -520,7 +516,7 @@ select:disabled {
 .form-group.date-group {
   display: flex;
   flex-direction: column; /* label on top */
-  gap: 6px;
+  gap: 60px;
 }
 
 .form-group.date-group .date-input-row {
@@ -528,7 +524,7 @@ select:disabled {
   flex-direction: row;
   align-items: center;
   justify-content: flex-start; /* keep them side by side */
-  gap: 10px;
+  gap: 30px;
   flex-wrap: nowrap; /* prevent wrapping */
 }
 
@@ -569,4 +565,18 @@ select:disabled {
   flex: 0 0 auto;
   width: auto !important; /* prevent full row stretch */
   min-width: 220px;       /* give it some fixed size */
+}
+
+.full-width-table td input,
+.full-width-table td select {
+  max-width: 260px;  /* set uniform width for all */
+  min-width: 150px;  /* prevents collapsing */
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid orange;
+  text-align: center; /* centers text for consistency */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 14px;
 }
