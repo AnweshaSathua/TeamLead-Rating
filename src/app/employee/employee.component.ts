@@ -30,7 +30,6 @@ export interface Employee {
 
 export interface DashboardResponse {
   ratings: Employee[];
-  tasks: string[];
 }
 
 // ---------------- Component ----------------
@@ -143,44 +142,43 @@ export class EmployeeComponent {
 
   // ---------------- Fetch employees ----------------
 fetchEmployees(date: string) {
-  const tlemail = 'tsribatsapatro@gmail.com'; // replace with dynamic later
+  const tlemail = 'tsribatsapatro@gmail.com';
 
-  this.http.get<DashboardResponse>(`https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`)
-    .subscribe({
-      next: (res: DashboardResponse) => {
-        console.log('API returned:', res);
+  this.http.get<DashboardResponse>(
+    `https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`
+  ).subscribe({
+    next: (res: DashboardResponse) => {
+      console.log('API returned:', res);
 
-        // ✅ Use response directly
-        if (!Array.isArray(res.ratings)) {
-          console.error('Expected ratings array but got:', res.ratings);
-          return;
-        }
-
-        this.allTasks = res.tasks || [];
-        this.employeeList.clear();
-
-        res.ratings.forEach((emp: any) => {
-          this.employeeList.push(this.fb.group({
-            employeeId: [emp.employeeId],
-            employeeName: [emp.employeeName],
-            tasks: [emp.selectedTasks || []],
-            taskOptions: [res.tasks],
-            status: [emp.status],
-            hours: [emp.hours],
-            extraHours: [emp.extraHours],
-            rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
-            remark: [emp.remark],
-          }));
-        });
-
-        this.dataSource.data = this.employeeList.controls as FormGroup[];
-        this.dataSource._updateChangeSubscription();
-        this.cdRef.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching employees:', err);
+      if (!Array.isArray(res.ratings)) {
+        console.error('Expected ratings array but got:', res.ratings);
+        return;
       }
-    });
+
+      this.employeeList.clear();
+
+      res.ratings.forEach((emp: Employee) => {
+        this.employeeList.push(this.fb.group({
+          employeeId: [emp.employeeId],
+          employeeName: [emp.employeeName],
+          tasks: [emp.selectedTasks || []],   // ✅ selected tasks
+          taskOptions: [emp.tasks || []],     // ✅ employee-specific task list
+          status: [emp.status],
+          hours: [emp.hours],
+          extraHours: [emp.extraHours],
+          rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
+          remark: [emp.remark],
+        }));
+      });
+
+      this.dataSource.data = this.employeeList.controls as FormGroup[];
+      this.dataSource._updateChangeSubscription();
+      this.cdRef.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error fetching employees:', err);
+    }
+  });
 }
 
 
