@@ -152,7 +152,7 @@ fetchEmployees(date: string) {
         console.log('API returned:', res);
 
         // If backend wraps inside body
-        const data = res.body ? res.body : res;
+        const data = res.body || {};
 
         if (!Array.isArray(data.ratings)) {
           console.error('Expected ratings array but got:', data.ratings);
