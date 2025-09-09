@@ -132,7 +132,7 @@ export class EmployeeComponent {
   
   fetchEmployees(date: string) { 
     this.http.get<any[]>
-    ('https://192.168.0.22:8243/employee/api/teamlead/dashboard/{tlemail}?date=${date}').subscribe(data => {
+    ('https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}?date=${date}').subscribe(data => {
       console.log('API returned:', data);
       this.employeeList.clear(); 
 
