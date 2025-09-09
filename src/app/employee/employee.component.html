@@ -74,7 +74,7 @@
                 Select Task
               </option>
              <option *ngFor="let tasks of row.get('taskOptions')?.value" [value]="tasks">
-              {{ tasks }}
+              {{ tasks.name }}
               </option> 
             </select>
         </td>
