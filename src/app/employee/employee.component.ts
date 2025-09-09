@@ -25,6 +25,7 @@ export interface Employee {
   status: string;
   hours: number;
   extraHours: number;
+  rating: number;
   remark: string;
 }
 
