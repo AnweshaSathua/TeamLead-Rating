@@ -142,36 +142,33 @@ export class EmployeeComponent {
   }
 
   // ---------------- Fetch employees ----------------
-  // ---------------- Fetch employees ----------------
 fetchEmployees(date: string) {
   const tlemail = 'tsribatsapatro@gmail.com'; // replace with dynamic later
 
-  this.http.get<any>(`https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`)
+  this.http.get<DashboardResponse>(`https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`)
     .subscribe({
-      next: (res: any) => {
+      next: (res: DashboardResponse) => {
         console.log('API returned:', res);
 
-        // If backend wraps inside body
-        const data = res.body || {};
-
-        if (!Array.isArray(data.ratings)) {
-          console.error('Expected ratings array but got:', data.ratings);
+        // ✅ Use response directly
+        if (!Array.isArray(res.ratings)) {
+          console.error('Expected ratings array but got:', res.ratings);
           return;
         }
 
-        this.allTasks = data.tasks || [];
+        this.allTasks = res.tasks || [];
         this.employeeList.clear();
 
-        data.ratings.forEach((emp: any) => {
+        res.ratings.forEach((emp: any) => {
           this.employeeList.push(this.fb.group({
             employeeId: [emp.employeeId],
             employeeName: [emp.employeeName],
-            tasks: [emp.selectedTasks],
-            taskOptions: [data.tasks],
+            tasks: [emp.selectedTasks || []],
+            taskOptions: [res.tasks],
             status: [emp.status],
             hours: [emp.hours],
             extraHours: [emp.extraHours],
-            rating: ['', [Validators.required, Validators.min(1), Validators.max(6)]],
+            rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
             remark: [emp.remark],
           }));
         });
@@ -185,6 +182,7 @@ fetchEmployees(date: string) {
       }
     });
 }
+
 
 
   // ---------------- Submit ----------------
