@@ -130,14 +130,23 @@ export class EmployeeComponent {
 }
 
   
-  fetchEmployees(date: string) { 
-    this.http.get<any[]>
-    ('https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}').subscribe(data => {
+ fetchEmployees(date: string) { 
+  const tlemail = 'tsribatsapatro@gmail.com'; // or however you get this value dynamically
+
+  this.http.get<any[]>(`https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`)
+    .subscribe(data => {
       console.log('API returned:', data);
+
+      // ensure data is array
+      if (!Array.isArray(data)) {
+        console.error('Expected array but got:', data);
+        return;
+      }
+
       this.employeeList.clear(); 
 
-       data.forEach(emp => {
-         this.employeeList.push(this.fb.group({ 
+      data.forEach(emp => {
+        this.employeeList.push(this.fb.group({ 
           employeeId: [emp.employeeId], 
           employeeName: [emp.employeeName], 
           tasks: [emp.selectedTasks], 
@@ -147,14 +156,15 @@ export class EmployeeComponent {
           extraHours: [emp.extraHours],
           rating: ['', [Validators.required, Validators.min(1), Validators.max(6)]],
           remark: [emp.remark],
-         }));
-         });
-          this.dataSource.data = this.employeeList.controls as FormGroup[];
-          this.dataSource._updateChangeSubscription();
-          this.cdRef.detectChanges();
-         });
-         }
-         
+        }));
+      });
+
+      this.dataSource.data = this.employeeList.controls as FormGroup[];
+      this.dataSource._updateChangeSubscription();
+      this.cdRef.detectChanges();
+    });
+}
+
    onTaskSelect(index: number, dialogTemplate: any) {
   const selectedTask = this.employeeList.at(index).get('tasks')?.value;
   if (selectedTask) {
