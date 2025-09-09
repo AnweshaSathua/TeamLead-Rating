@@ -77,9 +77,6 @@ export class EmployeeComponent {
     'employeeId',
     'employeeName',
     'tasks',
-    'status',
-    'hours',
-    'extraHours',
     'rating',
     'remark'
   ];
@@ -207,14 +204,25 @@ fetchEmployees(date: string) {
 
   // ---------------- Helpers ----------------
   onTaskSelect(index: number, dialogTemplate: any) {
-    const selectedTask = this.employeeList.at(index).get('tasks')?.value;
-    if (selectedTask) {
-      this.dialog.open(dialogTemplate, {
-        width: '400px',
-        data: selectedTask
-      });
-    }
+  const task = this.employeeList.at(index).get('tasks')?.value; // selected task
+  const row = this.employeeList.at(index).value; // entire row data
+
+  if (task) {
+    this.dialog.open(dialogTemplate, {
+      width: '400px',
+      data: {
+        name: task.name,
+        description: task.description,
+        taskReference: task.taskReference,
+        prLink: task.prLink,           // optional, if available
+        status: row.status,
+        hours: row.hours,
+        extraHours: row.extraHours
+      }
+    });
   }
+}
+
 
   onReset(): void {
     this.employeeForm.reset();
