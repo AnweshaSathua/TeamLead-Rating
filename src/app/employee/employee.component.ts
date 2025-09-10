@@ -521,8 +521,8 @@ fetchEmployees(date: string) {
         this.employeeList.push(this.fb.group({
           employeeId: [emp.employeeId],
           employeeName: [emp.employeeName],
-          tasks: [emp.selectedTasks || []],
-          taskOptions: [emp.tasks || []],
+          tasks: [emp.selectedTasks || ''],
+          taskOptions: [this.allTasks],
           status: [emp.status],
           hours: [emp.hours],
           extraHours: [emp.extraHours],
