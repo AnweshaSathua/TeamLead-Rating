@@ -576,15 +576,25 @@ openTaskPopup(employeeId: string, taskName: string, workDate: string, dialogTemp
 
 // ---------------- Modified Date Save ----------------
 onSaveDate() {
-  const selectedDate = this.employeeForm.get('date')?.value;
+   const selectedDate = this.employeeForm.get('date')?.value;
   if (!selectedDate) {
     this.employeeForm.get('date')?.markAsTouched();
     return;
   }
-  this.fetchEmployees(selectedDate);      // load employees
-  this.fetchTaskListByDate(selectedDate); // load task list for TL
-}
 
+  // Fetch TL task list first, then employees
+  this.http.get<any>(
+    `https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${selectedDate}`
+  ).subscribe({
+    next: (res) => {
+      this.allTasks = res?.tasks || [];
+      this.fetchEmployees(selectedDate); // now allTasks is ready
+    },
+    error: (err) => {
+      console.error('Error fetching task list:', err);
+    }
+  });
+}
 // ---------------- Modified Task Select ----------------
 onTaskSelect(index: number, dialogTemplate: any) {
   const row = this.employeeList.at(index).value;
