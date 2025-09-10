@@ -522,7 +522,7 @@ fetchEmployees(date: string) {
           employeeId: [emp.employeeId],
           employeeName: [emp.employeeName],
           tasks: [emp.selectedTasks || ''],
-          taskOptions: [this.allTasks],
+          taskOptions: [emp.tasks || []],
           status: [emp.status],
           hours: [emp.hours],
           extraHours: [emp.extraHours],
