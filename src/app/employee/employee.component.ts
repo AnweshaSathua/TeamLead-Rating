@@ -7,11 +7,11 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 interface Task {
   id: string;
   name: string;
-  prLink: string;
-  description: string;
-  status: string;
-  hours: string | number;
-  extraHours:string | number;
+  prLink?: string;
+  description?: string;
+  status?: string;
+  hours?: string | number;
+  extraHours?:string | number;
 }
 interface Employee {
   employeeId: string;
@@ -83,23 +83,17 @@ export class EmployeeComponent implements OnInit {
   // Handle date save - fetch employees data
   onDateSave(): void {
     if (this.selectedDate && this.teamLeadId) {
-      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${this.selectedDate}&employeeId=${this.teamLeadId}`)
-        .subscribe({
-          next: (res) => {
-          // 🔥 Map string[] → Task[]
+    this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${this.selectedDate}&employeeId=${this.teamLeadId}`)
+      .subscribe({
+        next: (res) => {
+          // Store only taskId + taskName initially
           this.employees = res.map(emp => ({
             ...emp,
             tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
-              id: `${emp.employeeId}-${index}`, // fake ID
-              name: taskName,
-              prLink: '',
-              description: '',
-              status: '',
-              hours: 0,
-              extraHours: 0
+              id: `${emp.employeeId}-${index}`, // temporary/fake id
+              name: taskName
             }))
           }));
-          console.log('Mapped employees:', this.employees);
         },
         error: (err) => {
           console.error('Error fetching employees', err);
@@ -134,23 +128,25 @@ export class EmployeeComponent implements OnInit {
   }
 
   // ✅ If it's a real backend task id, fetch details
-  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
+  this.http.get<any>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
     .subscribe({
-      next: (res:any) => {
-      this.selectedTask = {
-        id: res.id,
-        name: res.task,   // 🔥 map backend "task" → frontend "name"
-        prLink: res.prLink,
-        description: res.description,
-        status: res.status,
-        hours: res.hours,
-        extraHours: res.extraHours,
-        employeeId
-      } as Task & { employeeId: string }; 
+      next: (res) => {
+        this.selectedTask = {
+          id: res.id,
+          name: res.task,              // backend field → frontend "name"
+          prLink: res.prLink,
+          description: res.description,
+          status: res.status,
+          hours: res.hours,
+          extraHours: res.extraHours,
+          employeeId
+        } as Task & { employeeId: string };
+
+        this.showTaskModal = true;
       },
       error: (err) => {
         console.error('Error fetching task details:', err);
-        // Keep fallback task shown
+        alert('Failed to load task details!');
       }
     });
 }
