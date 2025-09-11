@@ -168,11 +168,11 @@ export class EmployeeComponent implements OnInit {
             tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
               id: `${emp.employeeId}-${index}`, // fake ID
               name: taskName,
-              prLink: 'task.prLink' in emp.tasks[index] ? (emp.tasks[index] as any).prLink : '',
-              description: 'task.description' in emp.tasks[index] ? (emp.tasks[index] as any).description : '',
-              status: 'task.status' in emp.tasks[index] ? (emp.tasks[index] as any).status : '',
-              hours: 'task.hours' in emp.tasks[index] ? (emp.tasks[index] as any).hours : '',
-              extraHours: 'task.extraHours' in emp.tasks[index] ? (emp.tasks[index] as any).extraHours : ''
+              prLink: '',
+              description:'',
+              status:'',
+              hours:'',
+              extraHours:''
             }))
           }));
           console.log('Mapped employees:', this.employees);
