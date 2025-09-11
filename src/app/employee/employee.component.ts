@@ -36,8 +36,8 @@ interface Evaluation {
 export class EmployeeComponent implements OnInit {
   
   // Properties
-  employeeId: string = ''; // This would come from login service
-  employeeName: string = '';
+  teamLeadId: string = ''; // This would come from login service
+  teamLeadName: string = '';
   selectedDate: string = '';
   employees: Employee[] = [];
   selectedTask: Task | null = null;
@@ -131,11 +131,11 @@ export class EmployeeComponent implements OnInit {
       const storedEmpId = localStorage.getItem('employeeId');
 
       if (empIdFromUrl) {
-        this.employeeId = empIdFromUrl;
+        this.teamLeadId = empIdFromUrl;
         localStorage.setItem('employeeId', empIdFromUrl);
         this.loadTeamLeadDetails(empIdFromUrl);
       } else if (storedEmpId) {
-        this.employeeId = storedEmpId;
+        this.teamLeadId = storedEmpId;
         this.loadTeamLeadDetails(storedEmpId);
       } else {
         console.warn('⚠️ No employeeId found in URL or localStorage!');
@@ -148,19 +148,19 @@ export class EmployeeComponent implements OnInit {
     this.http.get<any>(`https://192.168.0.22:8243/employee/api/${employeeId}`)
       .subscribe({
         next: (res) => {
-          this.employeeName = res.employeeName || 'Unknown TL';
+          this.teamLeadName = res.employeeName || 'Unknown TL';
         },
         error: (err) => {
           console.error('Error fetching team lead details:', err);
-          this.employeeName = 'Unknown TL';
+          this.teamLeadName = 'Unknown TL';
         }
       });
   }
 
   // Handle date save - fetch employees data
   onDateSave(): void {
-    if (this.selectedDate && this.employeeId) {
-      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/?employeeId=${this.employeeId}&date=${this.selectedDate}`)
+    if (this.selectedDate && this.teamLeadId) {
+      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/?employeeId=${this.teamLeadId}&date=${this.selectedDate}`)
         .subscribe({
           next: (res) => {
             this.employees = res;
@@ -273,8 +273,8 @@ export class EmployeeComponent implements OnInit {
     }));
 
     const submissionData = {
-      teamLeadId: this.employeeId,
-      date: this.selectedDate,
+      teamLeadId: this.teamLeadId,
+      date: this.selectedDate.split('-').reverse().join('-'),
       evaluations: evaluations
     };
 
