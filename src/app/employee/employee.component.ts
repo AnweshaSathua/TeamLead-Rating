@@ -7,7 +7,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 interface Task {
   id: string;
   name: string;
-  reference: string;
+  prLink: string;
   description: string;
   status: string;
   hours: number;
@@ -45,6 +45,7 @@ export class EmployeeComponent implements OnInit {
   ratings: { [key: string]: number } = {};
   remarks: { [key: string]: string } = {};
   dropdownOpen: { [key: string]: boolean } = {};
+  employeeForm: any;
 
   // // Mock data - in real app, this would come from services
   // private mockTeamLeads: { [key: string]: string } = {
@@ -185,10 +186,24 @@ export class EmployeeComponent implements OnInit {
 
   // Handle task selection
   onTaskSelect(employeeId: string, task: Task): void {
-    this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
-    this.showTaskModal = true;
-    this.dropdownOpen[employeeId] = false;
-  }
+  // Optimistically set selectedTask so popup opens immediately
+  this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
+  this.showTaskModal = true;
+  this.dropdownOpen[employeeId] = false;
+
+  // ✅ Fetch full task details from backend
+  this.http.get<Task>(`https://192.168.0.22:8243/employee/api/task/${task.id}`)
+    .subscribe({
+      next: (res) => {
+        // Replace selectedTask with the detailed response
+        this.selectedTask = { ...res, employeeId } as Task & { employeeId: string };
+      },
+      error: (err) => {
+        console.error('Error fetching task details:', err);
+        // Keep fallback (the task from employee object)
+      }
+    });
+}
 
   // Close task modal
   closeTaskModal(): void {
