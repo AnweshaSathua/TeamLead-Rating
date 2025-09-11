@@ -160,7 +160,7 @@ export class EmployeeComponent implements OnInit {
   // Handle date save - fetch employees data
   onDateSave(): void {
     if (this.selectedDate && this.teamLeadId) {
-      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/?teamLeadId=${this.teamLeadId}&date=${this.selectedDate}`)
+      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/?teamLeadId=${this.teamLeadId}&date=${this.selectedDate}`)
         .subscribe({
           next: (res) => {
             this.employees = res;
@@ -192,7 +192,7 @@ export class EmployeeComponent implements OnInit {
   this.dropdownOpen[employeeId] = false;
 
   // ✅ Fetch full task details from backend
-  this.http.get<Task>(`https://192.168.0.22:8243/employee/api/task/${task.id}`)
+  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?${task.id}`)
     .subscribe({
       next: (res) => {
         // Replace selectedTask with the detailed response
@@ -278,7 +278,7 @@ export class EmployeeComponent implements OnInit {
       evaluations: evaluations
     };
 
-    this.http.post('https://192.168.0.22:8243/employee/api/v1/tasks/submit/', submissionData)
+    this.http.post('https://192.168.0.22:8243/employee/rating/submit', submissionData)
       .subscribe({
         next: () => {
           alert('Data submitted successfully!');
