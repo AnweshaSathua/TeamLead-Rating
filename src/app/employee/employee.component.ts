@@ -88,17 +88,17 @@ export class EmployeeComponent implements OnInit {
           next: (res) => {
           // 🔥 Map string[] → Task[]
           this.employees = res.map(emp => ({
-  ...emp,
-  tasks: emp.tasks.map((task: any) => ({
-    id: task.id,          // keep real id
-    name: task.name,      // not just string
-    prLink: task.prLink || '',
-    description: task.description || '',
-    status: task.status || '',
-    hours: task.hours || '',
-    extraHours: task.extraHours || ''
-  }))
-}));
+            ...emp,
+            tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
+              id: `${emp.employeeId}-${index}`, // fake ID
+              name: taskName,
+              prLink: '',
+              description: '',
+              status: '',
+              hours: 0,
+              extraHours: 0
+            }))
+          }));
           console.log('Mapped employees:', this.employees);
         },
         error: (err) => {
