@@ -160,7 +160,7 @@ export class EmployeeComponent implements OnInit {
   // Handle date save - fetch employees data
   onDateSave(): void {
     if (this.selectedDate && this.employeeId) {
-      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/${this.employeeId}&date=${this.selectedDate}`)
+      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/?employeeId=${this.employeeId}&date=${this.selectedDate}`)
         .subscribe({
           next: (res) => {
             this.employees = res;
