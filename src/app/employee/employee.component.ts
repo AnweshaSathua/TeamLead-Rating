@@ -136,8 +136,17 @@ export class EmployeeComponent implements OnInit {
   // ✅ If it's a real backend task id, fetch details
   this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
     .subscribe({
-      next: (res) => {
-        this.selectedTask = { ...res, employeeId } as Task & { employeeId: string };
+      next: (res:any) => {
+      this.selectedTask = {
+        id: res.id,
+        name: res.task,   // 🔥 map backend "task" → frontend "name"
+        prLink: res.prLink,
+        description: res.description,
+        status: res.status,
+        hours: res.hours,
+        extraHours: res.extraHours,
+        employeeId
+      } as Task & { employeeId: string }; 
       },
       error: (err) => {
         console.error('Error fetching task details:', err);
