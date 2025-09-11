@@ -1,641 +1,279 @@
-// import { CommonModule } from '@angular/common';
-// import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@angular/forms';
-// import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
-// import { MatIconModule } from '@angular/material/icon';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatTooltipModule } from '@angular/material/tooltip';
-// import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-// import { HttpClient } from '@angular/common/http';
-// import { Component, Renderer2, ChangeDetectorRef } from '@angular/core';
-// import { MatSelectModule } from '@angular/material/select';
-// import { MatDatepickerModule } from '@angular/material/datepicker';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatNativeDateModule } from '@angular/material/core';
-// import { MatCheckboxModule } from '@angular/material/checkbox';
-// import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-// import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-
-// // ---------------- Interfaces ----------------
-// export interface Employee {
-//   employeeId: string;
-//   employeeName: string;
-//   selectedTasks: string[];
-//   tasks: string[];
-//   status: string;
-//   hours: number;
-//   extraHours: number;
-//   rating: number;
-//   remark: string;
-// }
-
-// export interface DashboardResponse {
-//   ratings: Employee[];
-// }
-
-// // ---------------- Component ----------------
-// @Component({
-//   selector: 'app-root',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     FormsModule,
-//     ReactiveFormsModule,
-//     MatIconModule,
-//     MatButtonModule,
-//     MatSlideToggleModule,
-//     MatTooltipModule,
-//     MatSelectModule,
-//     MatDatepickerModule,
-//     MatFormFieldModule,
-//     MatInputModule,
-//     MatNativeDateModule,
-//     MatCheckboxModule,
-//     MatTableModule,
-//     MatDialogModule,
-//   ],
-//   providers: [MatDatepickerModule],
-//   templateUrl: './employee.component.html',
-//   styleUrls: ['./employee.component.css'],
-//   animations: [
-//     trigger('fabAnimation', [
-//       transition(':enter', [
-//         query('.fab-btn', [
-//           style({ opacity: 0 }),
-//           stagger(100, [
-//             animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
-//           ])
-//         ])
-//       ])
-//     ])
-//   ]
-// })
-// export class EmployeeComponent {
-//   isDarkMode = false;
-
-//   displayedColumns = [
-//     'employeeId',
-//     'employeeName',
-//     'tasks',
-//     'rating',
-//     'remark'
-//   ];
-
-//   employeeForm: FormGroup;
-//   editRowMap: { [index: number]: boolean } = {};
-//   dataSource = new MatTableDataSource<FormGroup>();
-
-//   // hold available task options for dropdowns
-//   allTasks: string[] = [];
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private http: HttpClient,
-//     private renderer: Renderer2,
-//     private cdRef: ChangeDetectorRef,
-//     private dialog: MatDialog
-//   ) {
-//     this.employeeForm = this.fb.group({
-//       date: ['', Validators.required],
-//       employeeList: this.fb.array([this.createEmployeeGroup()])
-//     });
-
-//     // Initially set first row editable
-//     this.editRowMap[0] = true;
-//   }
-
-//   // Getters
-//   get employeeList(): FormArray {
-//     return this.employeeForm.get('employeeList') as FormArray;
-//   }
-
-//   // Create Employee FormGroup
-//   createEmployeeGroup(): FormGroup {
-//     return this.fb.group({
-//       employeeId: ['', Validators.required],
-//       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-//       tasks: ['', Validators.required],
-//       taskOptions: [[]],
-//       status: ['', Validators.required],
-//       hours: ['', Validators.required],
-//       extraHours: ['', Validators.required],
-//       rating: [0, [Validators.required, Validators.min(1), Validators.max(6)]],
-//       remark: ['']
-//     });
-//   }
-
-//   onDateChange(event: any) {
-//     const selectedDate = event.target.value;
-//     console.log('Selected date:', selectedDate);
-//   }
-
-//   onSaveDate() {
-//     const selectedDate = this.employeeForm.get('date')?.value;
-//     if (!selectedDate) {
-//       this.employeeForm.get('date')?.markAsTouched();
-//       return;
-//     }
-//     this.fetchEmployees(selectedDate);
-//   }
-
-//   // ---------------- Fetch employees ----------------
-// fetchEmployees(date: string) {
-//   const tlemail = 'tsribatsapatro@gmail.com';
-
-//   this.http.get<DashboardResponse>(
-//     `https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`
-//   ).subscribe({
-//     next: (res: DashboardResponse) => {
-//       console.log('API returned:', res);
-
-//       if (!Array.isArray(res.ratings)) {
-//         console.error('Expected ratings array but got:', res.ratings);
-//         return;
-//       }
-
-//       this.employeeList.clear();
-
-//       res.ratings.forEach((emp: Employee) => {
-//         this.employeeList.push(this.fb.group({
-//           employeeId: [emp.employeeId],
-//           employeeName: [emp.employeeName],
-//           tasks: [emp.selectedTasks || []],   // ✅ selected tasks
-//           taskOptions: [emp.tasks || []],     // ✅ employee-specific task list
-//           status: [emp.status],
-//           hours: [emp.hours],
-//           extraHours: [emp.extraHours],
-//           rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
-//           remark: [emp.remark],
-//         }));
-//       });
-
-//       this.dataSource.data = this.employeeList.controls as FormGroup[];
-//       this.dataSource._updateChangeSubscription();
-//       this.cdRef.detectChanges();
-//     },
-//     error: (err) => {
-//       console.error('Error fetching employees:', err);
-//     }
-//   });
-// }
-
-
-
-//   // ---------------- Submit ----------------
-//   onSubmit() {
-//     this.employeeForm.markAllAsTouched();
-//     if (this.employeeForm.valid) {
-//       const formValue = this.employeeForm.getRawValue();
-//       const tlemail = 'tsribatsapatro@gmail.com';
-
-//       this.http.post(`https://192.168.0.22:8243/employee/rating/teamlead/daily/${tlemail}`, formValue)
-//         .subscribe({
-//           next: () => alert('Data submitted successfully!'),
-//           error: (err) => {
-//             console.error('Submission error:', err);
-//             let msg = `Error submitting data (Status: ${err.status || 'Unknown'})`;
-//             alert(msg);
-//           }
-//         });
-//     } else {
-//       this.scrollToFirstError();
-//     }
-//   }
-
-//   // ---------------- Helpers ----------------
-//   onTaskSelect(index: number, dialogTemplate: any) {
-//   const task = this.employeeList.at(index).get('tasks')?.value; // selected task
-//   const row = this.employeeList.at(index).value; // entire row data
-
-//   if (task) {
-//     this.dialog.open(dialogTemplate, {
-//       width: '400px',
-//       data: {
-//         name: task.name,
-//         description: task.description,
-//         taskReference: task.taskReference,
-//         prLink: task.prLink,           // optional, if available
-//         status: row.status,
-//         hours: row.hours,
-//         extraHours: row.extraHours
-//       }
-//     });
-//   }
-// }
-
-
-//   onReset(): void {
-//     this.employeeForm.reset();
-//     this.employeeList.clear();
-//     this.refreshTable();
-//   }
-
-//   onExit() {
-//     if (confirm('Are you sure you want to exit?')) {
-//       window.open('', '_self');
-//       window.close();
-//       window.location.href = 'about:blank';
-//     }
-//   }
-
-//   scrollToFirstError(): void {
-//     const firstInvalid = document.querySelector('.ng-invalid') as HTMLElement | null;
-//     if (firstInvalid) {
-//       setTimeout(() => {
-//         firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-//         firstInvalid.focus();
-//       }, 0);
-//     }
-//   }
-
-//   private refreshTable(): void {
-//     this.dataSource.data = this.employeeList.controls as FormGroup[];
-//     this.cdRef.detectChanges();
-//   }
-
-//   ngOnInit() {
-//     this.refreshTable();
-//   }
-// }
-
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, FormsModule } from '@angular/forms';
-import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { HttpClient } from '@angular/common/http';
-import { Component, Renderer2, ChangeDetectorRef } from '@angular/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-// ---------------- Interfaces ----------------
-export interface Employee {
-  employeeId: string;
-  employeeName: string;
-  selectedTasks: string[];
-  tasks: string[];
+interface Task {
+  id: string;
+  name: string;
+  reference: string;
+  description: string;
   status: string;
   hours: number;
   extraHours: number;
+}
+
+interface Employee {
+  employeeId: string;
+  employeeName: string;
+  tasks: Task[];
+}
+
+interface Evaluation {
+  employeeId: string;
   rating: number;
-  remark: string;
+  remarks: string;
 }
 
-export interface DashboardResponse {
-  ratings: Employee[];
-}
-
-// ---------------- Component ----------------
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatNativeDateModule,
-    MatCheckboxModule,
-    MatTableModule,
-    MatDialogModule,
-  ],
-  providers: [MatDatepickerModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.css'],
-  animations: [
-    trigger('fabAnimation', [
-      transition(':enter', [
-        query('.fab-btn', [
-          style({ opacity: 0 }),
-          stagger(100, [
-            animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
-          ])
-        ])
-      ])
-    ])
-  ]
+  styleUrls: ['./employee.component.css']
 })
-export class EmployeeComponent {
-  isDarkMode = false;
+export class EmployeeComponent implements OnInit {
+  
+  // Properties
+  teamLeadId: string = ''; // This would come from login service
+  teamLeadName: string = '';
+  selectedDate: string = '';
+  employees: Employee[] = [];
+  selectedTask: Task | null = null;
+  showTaskModal: boolean = false;
+  ratings: { [key: string]: number } = {};
+  remarks: { [key: string]: string } = {};
+  dropdownOpen: { [key: string]: boolean } = {};
 
-  displayedColumns = [
-    'employeeId',
-    'employeeName',
-    'tasks',
-    'rating',
-    'remark'
-  ];
+  // // Mock data - in real app, this would come from services
+  // private mockTeamLeads: { [key: string]: string } = {
+  //   'TL001': 'John Smith',
+  //   'TL002': 'Sarah Johnson',
+  //   'TL003': 'Mike Davis'
+  // };
 
-  employeeForm: FormGroup;
-  editRowMap: { [index: number]: boolean } = {};
-  dataSource = new MatTableDataSource<FormGroup>();
-
-  // hold available task options for dropdowns
-  allTasks: string[] = [];
-
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private renderer: Renderer2,
-    private cdRef: ChangeDetectorRef,
-    private dialog: MatDialog
-  ) {
-    this.employeeForm = this.fb.group({
-      date: ['', Validators.required],
-      employeeList: this.fb.array([this.createEmployeeGroup()])
-    });
-
-    // Initially set first row editable
-    this.editRowMap[0] = true;
-  }
-
-  // Getters
-  get employeeList(): FormArray {
-    return this.employeeForm.get('employeeList') as FormArray;
-  }
-
-  // Create Employee FormGroup
-  createEmployeeGroup(): FormGroup {
-    return this.fb.group({
-      employeeId: ['', Validators.required],
-      employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      tasks: ['', Validators.required],
-      taskOptions: [[]],
-      status: ['', Validators.required],
-      hours: ['', Validators.required],
-      extraHours: ['', Validators.required],
-      rating: [0, [Validators.required, Validators.min(1), Validators.max(6)]],
-      remark: ['']
-    });
-  }
-
-  onDateChange(event: any) {
-    const selectedDate = event.target.value;
-    console.log('Selected date:', selectedDate);
-  }
-
-  // onSaveDate() {
-  //   const selectedDate = this.employeeForm.get('date')?.value;
-  //   if (!selectedDate) {
-  //     this.employeeForm.get('date')?.markAsTouched();
-  //     return;
-  //   }
-  //   this.fetchEmployees(selectedDate);
-  // }
-
-  // ---------------- Fetch employees ----------------
-// fetchEmployees(date: string) {
-//   const tlemail = 'tsribatsapatro@gmail.com';
-
-//   this.http.get<DashboardResponse>(
-//     `https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`
-//   ).subscribe({
-//     next: (res: DashboardResponse) => {
-//       console.log('API returned:', res);
-
-//       if (!Array.isArray(res.ratings)) {
-//         console.error('Expected ratings array but got:', res.ratings);
-//         return;
-//       }
-
-//       this.employeeList.clear();
-
-//       res.ratings.forEach((emp: Employee) => {
-//         this.employeeList.push(this.fb.group({
-//           employeeId: [emp.employeeId],
-//           employeeName: [emp.employeeName],
-//           tasks: [emp.selectedTasks || []],   // ✅ selected tasks
-//           taskOptions: [emp.tasks || []],     // ✅ employee-specific task list
-//           status: [emp.status],
-//           hours: [emp.hours],
-//           extraHours: [emp.extraHours],
-//           rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
-//           remark: [emp.remark],
-//         }));
-//       });
-
-//       this.dataSource.data = this.employeeList.controls as FormGroup[];
-//       this.dataSource._updateChangeSubscription();
-//       this.cdRef.detectChanges();
-//     },
-//     error: (err) => {
-//       console.error('Error fetching employees:', err);
-//     }
-//   });
-// }
-
-
-
-  // ---------------- Submit ----------------
-  onSubmit() {
-
-    this.employeeForm.markAllAsTouched();
-  if (this.employeeForm.valid) {
-    const payload = this.employeeForm.getRawValue();
-
-    this.http.post(
-      `https://192.168.0.22:8243/employee/rating/submit`,
-      payload
-    ).subscribe({
-      next: () => alert('Rating submitted successfully!'),
-      error: (err) => {
-        console.error('Error submitting rating:', err);
-        alert(`Error submitting rating (Status: ${err.status || 'Unknown'})`);
-      }
-    });
-  } else {
-    this.scrollToFirstError();
-  }
-}
-  //   this.employeeForm.markAllAsTouched();
-  //   if (this.employeeForm.valid) {
-  //     const formValue = this.employeeForm.getRawValue();
-  //     const tlemail = 'tsribatsapatro@gmail.com';
-
-  //     this.http.post(`https://192.168.0.22:8243/employee/rating/teamlead/daily/${tlemail}`, formValue)
-  //       .subscribe({
-  //         next: () => alert('Data submitted successfully!'),
-  //         error: (err) => {
-  //           console.error('Submission error:', err);
-  //           let msg = `Error submitting data (Status: ${err.status || 'Unknown'})`;
-  //           alert(msg);
+  // private mockEmployees: { [key: string]: Employee[] } = {
+  //   'TL001': [
+  //     {
+  //       employeeId: 'EMP001',
+  //       employeeName: 'Alice Wilson',
+  //       tasks: [
+  //         {
+  //           id: 'T001',
+  //           name: 'Frontend Development',
+  //           reference: 'PROJ-2024-001',
+  //           description: 'Develop responsive UI components using Angular framework',
+  //           status: 'In Progress',
+  //           hours: 6,
+  //           extraHours: 2
+  //         },
+  //         {
+  //           id: 'T002',
+  //           name: 'Code Review',
+  //           reference: 'PROJ-2024-002',
+  //           description: 'Review pull requests and provide feedback',
+  //           status: 'Completed',
+  //           hours: 2,
+  //           extraHours: 0
   //         }
-  //       });
-  //   } else {
-  //     this.scrollToFirstError();
-  //   }
-  // }
+  //       ]
+  //     },
+  //     {
+  //       employeeId: 'EMP002',
+  //       employeeName: 'Bob Chen',
+  //       tasks: [
+  //         {
+  //           id: 'T003',
+  //           name: 'Backend API',
+  //           reference: 'PROJ-2024-003',
+  //           description: 'Implement REST API endpoints for user management',
+  //           status: 'In Progress',
+  //           hours: 8,
+  //           extraHours: 1
+  //         },
+  //         {
+  //           id: 'T004',
+  //           name: 'Database Design',
+  //           reference: 'PROJ-2024-004',
+  //           description: 'Design and optimize database schema',
+  //           status: 'Pending',
+  //           hours: 4,
+  //           extraHours: 0
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       employeeId: 'EMP003',
+  //       employeeName: 'Carol Martinez',
+  //       tasks: [
+  //         {
+  //           id: 'T005',
+  //           name: 'Testing',
+  //           reference: 'PROJ-2024-005',
+  //           description: 'Unit and integration testing for core modules',
+  //           status: 'In Progress',
+  //           hours: 5,
+  //           extraHours: 3
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // };
 
-  // ---------------- Helpers ----------------
-//   onTaskSelect(index: number, dialogTemplate: any) {
-//   const task = this.employeeList.at(index).get('tasks')?.value; // selected task
-//   const row = this.employeeList.at(index).value; // entire row data
+  constructor(private http: HttpClient) {}
 
-//   if (task) {
-//     this.dialog.open(dialogTemplate, {
-//       width: '400px',
-//       data: {
-//         name: task.name,
-//         description: task.description,
-//         taskReference: task.taskReference,
-//         prLink: task.prLink,           // optional, if available
-//         status: row.status,
-//         hours: row.hours,
-//         extraHours: row.extraHours
-//       }
-//     });
-//   }
-// }
-fetchEmployees(date: string) {
-  const tlemail = 'tsribatsapatro@gmail.com';
+  ngOnInit(): void {
+    this.loadTeamLeadName();
+  }
 
-  this.http.get<DashboardResponse>(
-    `https://192.168.0.22:8243/employee/api/teamlead/dashboard/${tlemail}`
-  ).subscribe({
-    next: (res: DashboardResponse) => {
-      console.log('API returned:', res);
+  // Load team lead name from backend (simulated)
+  private loadTeamLeadName(): void {
+    const storedId = localStorage.getItem('employeeId');
 
-      if (!Array.isArray(res.ratings)) {
-        console.error('Expected ratings array but got:', res.ratings);
-        return;
+    if (storedId) {
+      this.teamLeadId = storedId;
+    this.http.get<{ name: string }>(`https://192.168.0.22:8243/employee/api/${storedId}`)
+        .subscribe({
+          next: (res) => {
+            this.teamLeadName = res.name;
+          },
+          error: (err) => {
+            console.error('Error fetching team lead name', err);
+            this.teamLeadName = 'Unknown TL';
+          }
+        });
+    }
+  }
+
+  // Handle date save - fetch employees data
+  onDateSave(): void {
+    if (this.selectedDate && this.teamLeadId) {
+      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/?teamLeadId=${this.teamLeadId}&date=${this.selectedDate}`)
+        .subscribe({
+          next: (res) => {
+            this.employees = res;
+          },
+          error: (err) => {
+            console.error('Error fetching employees', err);
+            this.employees = [];
+          }
+        });
+    }
+  }
+  // Toggle dropdown for task selection
+  toggleDropdown(employeeId: string): void {
+    this.dropdownOpen[employeeId] = !this.dropdownOpen[employeeId];
+    
+    // Close other dropdowns
+    Object.keys(this.dropdownOpen).forEach(key => {
+      if (key !== employeeId) {
+        this.dropdownOpen[key] = false;
       }
-
-      this.employeeList.clear();
-
-      res.ratings.forEach((emp: Employee) => {
-        this.employeeList.push(this.fb.group({
-          employeeId: [emp.employeeId],
-          employeeName: [emp.employeeName],
-          tasks: [emp.selectedTasks || ''],
-          taskOptions: [emp.tasks || []],
-          status: [emp.status],
-          hours: [emp.hours],
-          extraHours: [emp.extraHours],
-          rating: [emp.rating || 0, [Validators.required, Validators.min(1), Validators.max(6)]],
-          remark: [emp.remark],
-        }));
-      });
-
-      this.dataSource.data = this.employeeList.controls as FormGroup[];
-      this.dataSource._updateChangeSubscription();
-      this.cdRef.detectChanges();
-    },
-    error: (err) => {
-      console.error('Error fetching employees:', err);
-    }
-  });
-}
-
-// ---------------- Fetch task list by date ----------------
-fetchTaskListByDate(date: string) {
-  this.http.get<any>(
-    `https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${date}`
-  ).subscribe({
-    next: (res) => {
-      console.log('Task list by date:', res);
-      this.allTasks = res?.tasks || []; // assume API returns { tasks: [] }
-    },
-    error: (err) => {
-      console.error('Error fetching task list by date:', err);
-    }
-  });
-}
-
-// ---------------- Popup task details ----------------
-openTaskPopup(employeeId: string, taskName: string, workDate: string, dialogTemplate: any) {
-  this.http.get<any>(
-    `https://192.168.0.22:8243/employee/rating/getTasks?taskNames=${taskName}&employeeId=${employeeId}&workDate=${workDate}`
-  ).subscribe({
-    next: (taskDetails) => {
-      console.log('Popup task details:', taskDetails);
-      this.dialog.open(dialogTemplate, {
-        width: '400px',
-        data: taskDetails
-      });
-    },
-    error: (err) => {
-      console.error('Error fetching popup tasks:', err);
-    }
-  });
-}
-
-// ---------------- Modified Date Save ----------------
-onSaveDate() {
-   const selectedDate = this.employeeForm.get('date')?.value;
-  if (!selectedDate) {
-    this.employeeForm.get('date')?.markAsTouched();
-    return;
+    });
   }
 
-  // Fetch TL task list first, then employees
-  this.http.get<any>(
-    `https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${selectedDate}`
-  ).subscribe({
-    next: (res) => {
-      this.allTasks = res?.tasks || [];
-      this.fetchEmployees(selectedDate); // now allTasks is ready
-    },
-    error: (err) => {
-      console.error('Error fetching task list:', err);
-    }
-  });
-}
-// ---------------- Modified Task Select ----------------
-onTaskSelect(index: number, dialogTemplate: any) {
-  const row = this.employeeList.at(index).value;
-  const selectedTask = row.tasks;
-
-  if (selectedTask) {
-    const workDate = this.employeeForm.get('date')?.value;
-    this.openTaskPopup(row.employeeId, selectedTask, workDate, dialogTemplate);
+  // Handle task selection
+  onTaskSelect(employeeId: string, task: Task): void {
+    this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
+    this.showTaskModal = true;
+    this.dropdownOpen[employeeId] = false;
   }
-}
 
+  // Close task modal
+  closeTaskModal(): void {
+    this.showTaskModal = false;
+    this.selectedTask = null;
+  }
+
+  // Handle rating change
+  onRatingChange(employeeId: string, rating: number): void {
+    this.ratings[employeeId] = rating;
+  }
+
+  // Handle remark change
+  onRemarkChange(employeeId: string, event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target) {
+      this.remarks[employeeId] = target.value;
+    }
+  }
+
+  // Get rating for employee
+  getRating(employeeId: string): number {
+    return this.ratings[employeeId] || 0;
+  }
+
+  // Get remark for employee
+  getRemark(employeeId: string): string {
+    return this.remarks[employeeId] || '';
+  }
+
+  // Check if star should be filled
+  isStarFilled(employeeId: string, starNumber: number): boolean {
+    return this.getRating(employeeId) >= starNumber;
+  }
+
+  // Get status class for styling
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Completed':
+        return 'status-completed';
+      case 'In Progress':
+        return 'status-in-progress';
+      case 'Pending':
+        return 'status-pending';
+      default:
+        return '';
+    }
+  }
+
+  // Reset form
   onReset(): void {
-    this.employeeForm.reset();
-    this.employeeList.clear();
-    this.refreshTable();
+    this.selectedDate = '';
+    this.employees = [];
+    this.ratings = {};
+    this.remarks = {};
+    this.selectedTask = null;
+    this.showTaskModal = false;
+    this.dropdownOpen = {};
   }
 
-  onExit() {
+  // Submit form
+  onSubmit(): void {
+    const evaluations: Evaluation[] = this.employees.map(emp => ({
+      employeeId: emp.employeeId,
+      rating: this.ratings[emp.employeeId] || 0,
+      remarks: this.remarks[emp.employeeId] || ''
+    }));
+
+    const submissionData = {
+      teamLeadId: this.teamLeadId,
+      date: this.selectedDate,
+      evaluations: evaluations
+    };
+
+    this.http.post('https://192.168.0.22:8243/employee/api/v1/tasks/submit/', submissionData)
+      .subscribe({
+        next: () => {
+          alert('Data submitted successfully!');
+        },
+        error: (err) => {
+          console.error('Error submitting evaluations', err);
+          alert('Error while submitting data!');
+        }
+      });
+  }
+
+  // Exit application
+  onExit(): void {
     if (confirm('Are you sure you want to exit?')) {
-      window.open('', '_self');
+      // In real app, navigate to login or close application
       window.close();
-      window.location.href = 'about:blank';
     }
   }
 
-  scrollToFirstError(): void {
-    const firstInvalid = document.querySelector('.ng-invalid') as HTMLElement | null;
-    if (firstInvalid) {
-      setTimeout(() => {
-        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstInvalid.focus();
-      }, 0);
-    }
-  }
-
-  private refreshTable(): void {
-    this.dataSource.data = this.employeeList.controls as FormGroup[];
-    this.cdRef.detectChanges();
-  }
-
-  ngOnInit() {
-    this.refreshTable();
+  // Check if form is valid for submission
+  isFormValid(): boolean {
+    return this.selectedDate !== '' && this.employees.length > 0;
   }
 }
