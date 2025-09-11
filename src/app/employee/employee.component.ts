@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 interface Task {
@@ -88,17 +88,17 @@ export class EmployeeComponent implements OnInit {
           next: (res) => {
           // 🔥 Map string[] → Task[]
           this.employees = res.map(emp => ({
-            ...emp,
-            tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
-              id: `${emp.employeeId}-${index}`, // fake ID
-              name: taskName,
-              prLink:  '',
-              description: '',
-              status:'',
-              hours: '',
-              extraHours:''
-            }))
-          }));
+  ...emp,
+  tasks: emp.tasks.map((task: any) => ({
+    id: task.id,          // keep real id
+    name: task.name,      // not just string
+    prLink: task.prLink || '',
+    description: task.description || '',
+    status: task.status || '',
+    hours: task.hours || '',
+    extraHours: task.extraHours || ''
+  }))
+}));
           console.log('Mapped employees:', this.employees);
         },
         error: (err) => {
@@ -121,40 +121,23 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Handle task selection
-  onTaskSelect(employeeId: string, task: Task): void {
-  // Optimistically set selectedTask so popup opens immediately
+ onTaskSelect(employeeId: string, task: Task): void {
   this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
   this.showTaskModal = true;
   this.dropdownOpen[employeeId] = false;
-
- // ✅ If task.id looks like a fake id (contains "-"), skip backend call
-  if (task.id.includes('-')) {
-    console.log('Skipping backend fetch for fake task:', task);
-    return;
+ 
+  if (task.id) { // ✅ always try if id exists
+    this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
+      .subscribe({
+        next: (res) => {
+          this.selectedTask = { ...res, employeeId } as Task & { employeeId: string };
+        },
+        error: (err) => {
+          console.error('Error fetching task details:', err);
+        }
+      });
   }
-
-  // ✅ If it's a real backend task id, fetch details
-  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
-    .subscribe({
-      next: (res:any) => {
-      this.selectedTask = {
-        id: res.id,
-        name: res.task,   // 🔥 map backend "task" → frontend "name"
-        prLink: res.prLink,
-        description: res.description,
-        status: res.status,
-        hours: res.hours,
-        extraHours: res.extraHours,
-        employeeId
-      } as Task & { employeeId: string }; 
-      },
-      error: (err) => {
-        console.error('Error fetching task details:', err);
-        // Keep fallback task shown
-      }
-    });
 }
-
   // Close task modal
   closeTaskModal(): void {
     this.showTaskModal = false;
@@ -215,31 +198,37 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Submit form
-  onSubmit(): void {
-    const evaluations: Evaluation[] = this.employees.map(emp => ({
-      employeeId: emp.employeeId,
-      rating: this.ratings[emp.employeeId] || 0,
-      remarks: this.remarks[emp.employeeId] || ''
-    }));
-
-    const submissionData = {
-      teamLeadId: this.teamLeadId,
-      date: this.selectedDate.split('-').reverse().join('-'),
-      evaluations: evaluations
-    };
-
-    this.http.post('https://192.168.0.22:8243/employee/rating/submit', submissionData)
-      .subscribe({
-        next: () => {
-          alert('Data submitted successfully!');
-        },
-        error: (err) => {
-          console.error('Error submitting evaluations', err);
-          alert('Error while submitting data!');
-        }
-      });
-  }
-
+onSubmit(): void {
+  const evaluations: Evaluation[] = this.employees.map(emp => ({
+    employeeId: emp.employeeId,
+    rating: this.ratings[emp.employeeId] || 0,
+    remarks: this.remarks[emp.employeeId] || ''
+  }));
+ 
+  // Ensure date format is yyyy-MM-dd (Spring Boot friendly)
+  const formattedDate = new Date(this.selectedDate).toISOString().split('T')[0];
+ 
+  const submissionData = {
+    teamLeadId: this.teamLeadId,
+    date: formattedDate,
+    evaluations: evaluations
+  };
+ 
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
+ 
+  this.http.post('https://192.168.0.22:8243/employee/rating/submit', submissionData, { headers })
+    .subscribe({
+      next: () => {
+        alert('Data submitted successfully!');
+      },
+      error: (err) => {
+        console.error('Error submitting evaluations', err);
+        alert('Error while submitting data!');
+      }
+    });
+}
   // Exit application
   onExit(): void {
     if (confirm('Are you sure you want to exit?')) {
