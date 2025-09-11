@@ -163,15 +163,28 @@ export class EmployeeComponent implements OnInit {
       this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/by-date?date=${this.selectedDate}&employeeId=${this.teamLeadId}`)
         .subscribe({
           next: (res) => {
-            this.employees = res;
-          },
-          error: (err) => {
-            console.error('Error fetching employees', err);
-            this.employees = [];
-          }
-        });
-    }
+          // 🔥 Map string[] → Task[]
+          this.employees = res.map(emp => ({
+            ...emp,
+            tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
+              id: `${emp.employeeId}-${index}`, // fake ID
+              name: taskName,
+              prLink: '',
+              description: '',
+              status: '',
+              hours: 0,
+              extraHours: 0
+            }))
+          }));
+          console.log('Mapped employees:', this.employees);
+        },
+        error: (err) => {
+          console.error('Error fetching employees', err);
+          this.employees = [];
+        }
+      });
   }
+}
   // Toggle dropdown for task selection
   toggleDropdown(employeeId: string): void {
     this.dropdownOpen[employeeId] = !this.dropdownOpen[employeeId];
@@ -191,16 +204,21 @@ export class EmployeeComponent implements OnInit {
   this.showTaskModal = true;
   this.dropdownOpen[employeeId] = false;
 
-  // ✅ Fetch full task details from backend
-  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?${task.id}`)
+ // ✅ If task.id looks like a fake id (contains "-"), skip backend call
+  if (task.id.includes('-')) {
+    console.log('Skipping backend fetch for fake task:', task);
+    return;
+  }
+
+  // ✅ If it's a real backend task id, fetch details
+  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
     .subscribe({
       next: (res) => {
-        // Replace selectedTask with the detailed response
         this.selectedTask = { ...res, employeeId } as Task & { employeeId: string };
       },
       error: (err) => {
         console.error('Error fetching task details:', err);
-        // Keep fallback (the task from employee object)
+        // Keep fallback task shown
       }
     });
 }
