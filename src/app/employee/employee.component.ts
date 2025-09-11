@@ -121,23 +121,40 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Handle task selection
- onTaskSelect(employeeId: string, task: Task): void {
+  onTaskSelect(employeeId: string, task: Task): void {
+  // Optimistically set selectedTask so popup opens immediately
   this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
   this.showTaskModal = true;
   this.dropdownOpen[employeeId] = false;
- 
-  if (task.id) { // ✅ always try if id exists
-    this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
-      .subscribe({
-        next: (res) => {
-          this.selectedTask = { ...res, employeeId } as Task & { employeeId: string };
-        },
-        error: (err) => {
-          console.error('Error fetching task details:', err);
-        }
-      });
+
+ // ✅ If task.id looks like a fake id (contains "-"), skip backend call
+  if (task.id.includes('-')) {
+    console.log('Skipping backend fetch for fake task:', task);
+    return;
   }
+
+  // ✅ If it's a real backend task id, fetch details
+  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
+    .subscribe({
+      next: (res:any) => {
+      this.selectedTask = {
+        id: res.id,
+        name: res.task,   // 🔥 map backend "task" → frontend "name"
+        prLink: res.prLink,
+        description: res.description,
+        status: res.status,
+        hours: res.hours,
+        extraHours: res.extraHours,
+        employeeId
+      } as Task & { employeeId: string }; 
+      },
+      error: (err) => {
+        console.error('Error fetching task details:', err);
+        // Keep fallback task shown
+      }
+    });
 }
+
   // Close task modal
   closeTaskModal(): void {
     this.showTaskModal = false;
