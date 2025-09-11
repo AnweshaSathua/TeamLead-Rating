@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 interface Task {
   id: string;
@@ -28,7 +29,7 @@ interface Evaluation {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.css']
 })
@@ -120,29 +121,39 @@ export class EmployeeComponent implements OnInit {
   //   ]
   // };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.loadTeamLeadName();
+   // ✅ Step 1: check for employeeId in URL → fallback to localStorage
+    this.activatedRoute.queryParamMap.subscribe(params => {
+      const empIdFromUrl = params.get('employeeId');
+      const storedEmpId = localStorage.getItem('employeeId');
+
+      if (empIdFromUrl) {
+        this.teamLeadId = empIdFromUrl;
+        localStorage.setItem('employeeId', empIdFromUrl);
+        this.loadTeamLeadDetails(empIdFromUrl);
+      } else if (storedEmpId) {
+        this.teamLeadId = storedEmpId;
+        this.loadTeamLeadDetails(storedEmpId);
+      } else {
+        console.warn('⚠️ No employeeId found in URL or localStorage!');
+      }
+    });
   }
 
   // Load team lead name from backend (simulated)
-  private loadTeamLeadName(): void {
-    const storedId = localStorage.getItem('employeeId');
-
-    if (storedId) {
-      this.teamLeadId = storedId;
-    this.http.get<{ name: string }>(`https://192.168.0.22:8243/employee/api/${storedId}`)
-        .subscribe({
-          next: (res) => {
-            this.teamLeadName = res.name;
-          },
-          error: (err) => {
-            console.error('Error fetching team lead name', err);
-            this.teamLeadName = 'Unknown TL';
-          }
-        });
-    }
+  private loadTeamLeadDetails(employeeId: string): void {
+    this.http.get<any>(`https://192.168.0.22:8243/employee/api/${employeeId}`)
+      .subscribe({
+        next: (res) => {
+          this.teamLeadName = res.employeeName || 'Unknown TL';
+        },
+        error: (err) => {
+          console.error('Error fetching team lead details:', err);
+          this.teamLeadName = 'Unknown TL';
+        }
+      });
   }
 
   // Handle date save - fetch employees data
