@@ -5,15 +5,14 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 interface Task {
-   id: string;
+  id: string;
   name: string;
   prLink: string;
   description: string;
   status: string;
-  hours:string | number ;
+  hours: string | number;
   extraHours:string | number;
 }
-
 interface Employee {
   employeeId: string;
   employeeName: string;
@@ -165,17 +164,17 @@ export class EmployeeComponent implements OnInit {
           next: (res) => {
           // 🔥 Map string[] → Task[]
           this.employees = res.map(emp => ({
-            ...emp,
-            tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
-              id: `${emp.employeeId}-${index}`, // fake ID
-              name: taskName,
-              prLink: '',
-              description: '',
-              status: '',
-              hours: 0,
-              extraHours: 0
-            }))
-          }));
+                        ...emp,
+          tasks: emp.tasks.map((task: any) => ({
+           id: task.id,  // ✅ use real backend taskId
+           name: task.name,
+            prLink: task.prLink,
+            description: task.description,
+            status: task.status,
+            hours: task.hours,
+            extraHours: task.extraHours
+  }))
+}));
           console.log('Mapped employees:', this.employees);
         },
         error: (err) => {
