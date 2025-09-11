@@ -36,8 +36,8 @@ interface Evaluation {
 export class EmployeeComponent implements OnInit {
   
   // Properties
-  teamLeadId: string = ''; // This would come from login service
-  teamLeadName: string = '';
+  employeeId: string = ''; // This would come from login service
+  employeeName: string = '';
   selectedDate: string = '';
   employees: Employee[] = [];
   selectedTask: Task | null = null;
@@ -131,11 +131,11 @@ export class EmployeeComponent implements OnInit {
       const storedEmpId = localStorage.getItem('employeeId');
 
       if (empIdFromUrl) {
-        this.teamLeadId = empIdFromUrl;
+        this.employeeId = empIdFromUrl;
         localStorage.setItem('employeeId', empIdFromUrl);
         this.loadTeamLeadDetails(empIdFromUrl);
       } else if (storedEmpId) {
-        this.teamLeadId = storedEmpId;
+        this.employeeId = storedEmpId;
         this.loadTeamLeadDetails(storedEmpId);
       } else {
         console.warn('⚠️ No employeeId found in URL or localStorage!');
@@ -148,19 +148,19 @@ export class EmployeeComponent implements OnInit {
     this.http.get<any>(`https://192.168.0.22:8243/employee/api/${employeeId}`)
       .subscribe({
         next: (res) => {
-          this.teamLeadName = res.employeeName || 'Unknown TL';
+          this.employeeName = res.employeeName || 'Unknown TL';
         },
         error: (err) => {
           console.error('Error fetching team lead details:', err);
-          this.teamLeadName = 'Unknown TL';
+          this.employeeName = 'Unknown TL';
         }
       });
   }
 
   // Handle date save - fetch employees data
   onDateSave(): void {
-    if (this.selectedDate && this.teamLeadId) {
-      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/?teamLeadId=${this.teamLeadId}&date=${this.selectedDate}`)
+    if (this.selectedDate && this.employeeId) {
+      this.http.get<Employee[]>(`https://192.168.0.22:8243/employee/api/v1/tasks/?teamLeadId=${this.employeeId}&date=${this.selectedDate}`)
         .subscribe({
           next: (res) => {
             this.employees = res;
@@ -192,7 +192,7 @@ export class EmployeeComponent implements OnInit {
   this.dropdownOpen[employeeId] = false;
 
   // ✅ Fetch full task details from backend
-  this.http.get<Task>(`https://192.168.0.22:8243/employee/api/task/${task.id}`)
+  this.http.get<Task>(`https://192.168.0.22:8243/employee/rating/getTasks?${task.id}`)
     .subscribe({
       next: (res) => {
         // Replace selectedTask with the detailed response
@@ -273,12 +273,12 @@ export class EmployeeComponent implements OnInit {
     }));
 
     const submissionData = {
-      teamLeadId: this.teamLeadId,
+      teamLeadId: this.employeeId,
       date: this.selectedDate,
       evaluations: evaluations
     };
 
-    this.http.post('https://192.168.0.22:8243/employee/api/v1/tasks/submit/', submissionData)
+    this.http.post('https://192.168.0.22:8243/employee/rating/submit', submissionData)
       .subscribe({
         next: () => {
           alert('Data submitted successfully!');
