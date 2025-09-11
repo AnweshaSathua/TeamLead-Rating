@@ -45,82 +45,6 @@ export class EmployeeComponent implements OnInit {
   remarks: { [key: string]: string } = {};
   dropdownOpen: { [key: string]: boolean } = {};
   employeeForm: any;
-
-  // // Mock data - in real app, this would come from services
-  // private mockTeamLeads: { [key: string]: string } = {
-  //   'TL001': 'John Smith',
-  //   'TL002': 'Sarah Johnson',
-  //   'TL003': 'Mike Davis'
-  // };
-
-  // private mockEmployees: { [key: string]: Employee[] } = {
-  //   'TL001': [
-  //     {
-  //       employeeId: 'EMP001',
-  //       employeeName: 'Alice Wilson',
-  //       tasks: [
-  //         {
-  //           id: 'T001',
-  //           name: 'Frontend Development',
-  //           reference: 'PROJ-2024-001',
-  //           description: 'Develop responsive UI components using Angular framework',
-  //           status: 'In Progress',
-  //           hours: 6,
-  //           extraHours: 2
-  //         },
-  //         {
-  //           id: 'T002',
-  //           name: 'Code Review',
-  //           reference: 'PROJ-2024-002',
-  //           description: 'Review pull requests and provide feedback',
-  //           status: 'Completed',
-  //           hours: 2,
-  //           extraHours: 0
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       employeeId: 'EMP002',
-  //       employeeName: 'Bob Chen',
-  //       tasks: [
-  //         {
-  //           id: 'T003',
-  //           name: 'Backend API',
-  //           reference: 'PROJ-2024-003',
-  //           description: 'Implement REST API endpoints for user management',
-  //           status: 'In Progress',
-  //           hours: 8,
-  //           extraHours: 1
-  //         },
-  //         {
-  //           id: 'T004',
-  //           name: 'Database Design',
-  //           reference: 'PROJ-2024-004',
-  //           description: 'Design and optimize database schema',
-  //           status: 'Pending',
-  //           hours: 4,
-  //           extraHours: 0
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       employeeId: 'EMP003',
-  //       employeeName: 'Carol Martinez',
-  //       tasks: [
-  //         {
-  //           id: 'T005',
-  //           name: 'Testing',
-  //           reference: 'PROJ-2024-005',
-  //           description: 'Unit and integration testing for core modules',
-  //           status: 'In Progress',
-  //           hours: 5,
-  //           extraHours: 3
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // };
-
   constructor(private http: HttpClient, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -168,10 +92,10 @@ export class EmployeeComponent implements OnInit {
             tasks: (emp.tasks as unknown as string[]).map((taskName, index) => ({
               id: `${emp.employeeId}-${index}`, // fake ID
               name: taskName,
-              prLink: '',
-              description:'',
+              prLink:  '',
+              description: '',
               status:'',
-              hours:'',
+              hours: '',
               extraHours:''
             }))
           }));
