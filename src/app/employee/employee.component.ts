@@ -5,7 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 interface Task {
-   id: long;
+   id: string;
   name: string;
   prLink: string;
   description: string;
