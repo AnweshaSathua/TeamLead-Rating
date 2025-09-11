@@ -5,13 +5,13 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 interface Task {
-  id: string;
+   id: long;
   name: string;
   prLink: string;
   description: string;
   status: string;
-  hours: number;
-  extraHours: number;
+  hours:string | number ;
+  extraHours:string | number;
 }
 
 interface Employee {
