@@ -58,6 +58,11 @@ body {
   border: 1px solid #e5e7eb;
 }
 
+.employee-table {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 .container-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -195,16 +200,32 @@ body {
 
 /* Table Styles */
 .table-container {
-  overflow-x: auto;
+ overflow-x: auto;
+  overflow-y: scroll;
+  max-height: 300px;
   margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: block;
 }
 
 .evaluation-table {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
+  border: none;
+  display: table;
+}
+
+.evaluation-table thead {
+  display: table-header-group;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.evaluation-table tbody {
+  display: table-row-group;
 }
 
 .evaluation-table th,
