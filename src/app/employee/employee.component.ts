@@ -122,18 +122,14 @@ export class EmployeeComponent implements OnInit {
   this.dropdownOpen[employeeId] = false;
 
  // ✅ If task.id looks like a fake id (contains "-"), skip backend call
-  if (task.id.includes('-')) {
-    console.log('Skipping backend fetch for fake task:', task);
-    return;
-  }
-
-  // ✅ If it's a real backend task id, fetch details
-  this.http.get<any>(`https://192.168.0.22:8243/employee/rating/getTasks?taskId=${task.id}`)
+ if (task.id.includes('-')) {
+  // Fallback: fetch by task name instead of ID
+  this.http.get<any>(`https://192.168.0.22:8243/employee/rating/getTasksByName?taskName=${task.name}`)
     .subscribe({
       next: (res) => {
         this.selectedTask = {
           id: res.id,
-          name: res.task,              // backend field → frontend "name"
+          name: res.task,
           prLink: res.prLink,
           description: res.description,
           status: res.status,
@@ -141,15 +137,14 @@ export class EmployeeComponent implements OnInit {
           extraHours: res.extraHours,
           employeeId
         } as Task & { employeeId: string };
-
-        this.showTaskModal = true;
       },
       error: (err) => {
-        console.error('Error fetching task details:', err);
-        alert('Failed to load task details!');
+        console.error('Error fetching task details by name:', err);
       }
     });
+  return;
 }
+  }
 
   // Close task modal
   closeTaskModal(): void {
