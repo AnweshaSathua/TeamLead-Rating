@@ -245,10 +245,10 @@ onSubmit(): void {
   // Exit application
   onExit(): void {
     if (confirm('Are you sure you want to exit?')) {
-      // In real app, navigate to login or close application
-      window.close();
-    }
+    localStorage.clear();
+    window.location.href = '/assets/thank-you.jpg';
   }
+}
 
   // Check if form is valid for submission
   isFormValid(): boolean {
