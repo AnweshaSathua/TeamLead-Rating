@@ -116,35 +116,42 @@ export class EmployeeComponent implements OnInit {
 
   // Handle task selection
   onTaskSelect(employeeId: string, task: Task): void {
-  // Optimistically set selectedTask so popup opens immediately
+  // Show popup immediately with minimal info
   this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
   this.showTaskModal = true;
   this.dropdownOpen[employeeId] = false;
 
- // ✅ If task.id looks like a fake id (contains "-"), skip backend call
- if (task.id.includes('-')) {
-  // Fallback: fetch by task name instead of ID
-  this.http.get<any>(`https://192.168.0.22:8243/employee/rating/getTasksByName?taskName=${task.name}`)
-    .subscribe({
+  // ✅ Build endpoint with taskNames, employeeId, and workDate
+  if (this.selectedDate && task.name) {
+    const formattedDate = new Date(this.selectedDate).toISOString().split('T')[0]; // yyyy-MM-dd
+    const url = `https://192.168.0.22:8243/employee/rating/getTasks?taskNames=${encodeURIComponent(task.name)}&employeeId=${employeeId}&workDate=${formattedDate}`;
+
+    this.http.get<any[]>(url).subscribe({
       next: (res) => {
-        this.selectedTask = {
-          id: res.id,
-          name: res.task,
-          prLink: res.prLink,
-          description: res.description,
-          status: res.status,
-          hours: res.hours,
-          extraHours: res.extraHours,
-          employeeId
-        } as Task & { employeeId: string };
+        if (res && res.length > 0) {
+          // Take the first task initially, or let user choose later
+          this.selectedTask = {
+            id: res[0].id,
+            name: res[0].task,
+            prLink: res[0].prLink,
+            description: res[0].description,
+            status: res[0].status,
+            hours: res[0].hours,
+            extraHours: res[0].extraHours,
+            employeeId
+          } as Task & { employeeId: string };
+
+          // Or keep all tasks for modal display
+          // e.g. this.selectedTasks = res.map(t => ({ ...t, employeeId }));
+        }
       },
       error: (err) => {
-        console.error('Error fetching task details by name:', err);
+        console.error('❌ Error fetching task details:', err);
       }
     });
-  return;
-}
   }
+}
+
 
   // Close task modal
   closeTaskModal(): void {
