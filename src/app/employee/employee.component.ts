@@ -115,40 +115,37 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Handle task selection
-  onTaskSelect(employeeId: string, task: Task): void {
-  // Show popup immediately with minimal info
+  // Handle task selection
+onTaskSelect(employeeId: string, task: Task): void {
+  // Show modal immediately
   this.selectedTask = { ...task, employeeId } as Task & { employeeId: string };
   this.showTaskModal = true;
   this.dropdownOpen[employeeId] = false;
 
-  // ✅ Build endpoint with taskNames, employeeId, and workDate
+  // ✅ Build API URL
   if (this.selectedDate && task.name) {
-    const formattedDate = new Date(this.selectedDate).toISOString().split('T')[0]; // yyyy-MM-dd
-    const url = `https://192.168.0.22:8243/employee/rating/getTasks?taskNames=${encodeURIComponent(task.name)}&employeeId=${employeeId}&workDate=${formattedDate}`;
+    const url = `https://192.168.0.22:8243/employee/rating/getTasks?taskNames=${encodeURIComponent(task.name)}&employeeId=${employeeId}&workDate=${this.selectedDate}`;
 
-    this.http.get<any[]>(url).subscribe({
+    this.http.get<any>(url).subscribe({
       next: (res) => {
-        if (res && res.length > 0) {
-          // Take the first task initially, or let user choose later
-          this.selectedTask = {
-            id: res[0].id,
-            name: res[0].task,
-            prLink: res[0].prLink,
-            description: res[0].description,
-            status: res[0].status,
-            hours: res[0].hours,
-            extraHours: res[0].extraHours,
-            employeeId
-          } as Task & { employeeId: string };
-
-          // Or keep all tasks for modal display
-          // e.g. this.selectedTasks = res.map(t => ({ ...t, employeeId }));
-        }
+        // ✅ Map backend response into Task object
+        this.selectedTask = {
+          id: String(res.id),           // backend gives number → convert to string
+          name: res.task,               // backend returns "task"
+          description: res.description,
+          prLink: res.prLink,
+          status: res.status,
+          hours: res.hours,
+          extraHours: res.extraHours,
+          employeeId
+        } as Task & { employeeId: string };
       },
       error: (err) => {
-        console.error('❌ Error fetching task details:', err);
+        console.error('Error fetching task details:', err);
       }
     });
+  } else {
+    console.warn('⚠️ selectedDate or task.name missing!');
   }
 }
 
