@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 interface Task {
   id: string;
@@ -45,7 +45,7 @@ export class EmployeeComponent implements OnInit {
   remarks: { [key: string]: string } = {};
   dropdownOpen: { [key: string]: boolean } = {};
   employeeForm: any;
-  constructor(private http: HttpClient, private activatedRoute: ActivatedRoute) {}
+  constructor(private http: HttpClient, private activatedRoute: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
    // ✅ Step 1: check for employeeId in URL → fallback to localStorage
@@ -234,6 +234,7 @@ onSubmit(): void {
     .subscribe({
       next: () => {
         alert('Data submitted successfully!');
+        this.router.navigate(['/final-review'], { state: { submissionData } });
       },
       error: (err) => {
         console.error('Error submitting evaluations', err);
