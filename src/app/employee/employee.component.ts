@@ -114,7 +114,7 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  // Handle task selection
+
   // Handle task selection
 onTaskSelect(employeeId: string, task: Task): void {
   // Show modal immediately
