@@ -3,6 +3,11 @@
   <div class="logo">
   <img src="assets/Logo.png" alt="Logo">
   </div>
+
+  <button class="btn btn-danger exit-btn" (click)="onExit()">
+    <i class="icon-exit"></i>
+    Exit
+  </button>
   </header>
 
 <div class="main-container">
@@ -54,7 +59,7 @@
         (click)="onDateSave()" 
         [disabled]="!selectedDate"
       >
-        Save
+        Search
       </button>
     </div>
   </div>
@@ -143,10 +148,6 @@
       >
         <i class="icon-submit"></i>
         Submit
-      </button>
-      <button class="btn btn-danger" (click)="onExit()">
-        <i class="icon-exit"></i>
-        Exit
       </button>
     </div>
   </div>
