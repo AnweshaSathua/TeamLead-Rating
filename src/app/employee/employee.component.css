@@ -512,24 +512,20 @@ body {
   }
 }
 
-.exit-fab {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #e63946;
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 50px;
-  cursor: pointer;
+.exit-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
   font-weight: 600;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  transition: all 0.2s ease-in-out;
+  border-radius: 6px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px; /* normal size on larger screens */
 }
 
-.exit-fab:hover {
-  background: #c92a34;
-  transform: scale(1.05);
+/* On smaller screens, make Exit full width like Search */
+@media (max-width: 768px) {
+  .exit-btn {
+    width: 100%;
+  }
 }
-
