@@ -234,7 +234,7 @@ onSubmit(): void {
     .subscribe({
       next: () => {
         alert('Data submitted successfully!');
-        this.router.navigate(['/final-review'], { state: { submissionData } });
+       this.onReset();
       },
       error: (err) => {
         console.error('Error submitting evaluations', err);
