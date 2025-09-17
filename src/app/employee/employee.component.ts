@@ -246,7 +246,7 @@ onSubmit(): void {
   onExit(): void {
     if (confirm('Are you sure you want to exit?')) {
     localStorage.clear();
-    window.location.href = '/assets/thank-you.jpg';
+    window.location.href = 'https://login-ivory-tau.vercel.app/';
   }
 }
 
