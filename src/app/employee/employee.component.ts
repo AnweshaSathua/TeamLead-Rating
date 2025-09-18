@@ -45,6 +45,14 @@ export class EmployeeComponent implements OnInit {
   remarks: { [key: string]: string } = {};
   dropdownOpen: { [key: string]: boolean } = {};
   employeeForm: any;
+
+  alertMessage: string = '';
+  showAlert: boolean = false;
+
+  confirmMessage: string = '';
+  showConfirm: boolean = false;
+  confirmCallback: (() => void) | null = null;
+
   constructor(private http: HttpClient, private activatedRoute: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
@@ -156,10 +164,10 @@ onTaskSelect(employeeId: string, task: Task): void {
     this.selectedTask = null;
   }
 
-  // Handle rating change
-  onRatingChange(employeeId: string, rating: number): void {
-    this.ratings[employeeId] = rating;
-  }
+// Handle rating change
+onRatingChange(employeeId: string, rating: any): void {
+  this.ratings[employeeId] = Number(rating);
+}
 
   // Handle remark change
   onRemarkChange(employeeId: string, event: Event): void {
@@ -169,20 +177,16 @@ onTaskSelect(employeeId: string, task: Task): void {
     }
   }
 
-  // Get rating for employee
-  getRating(employeeId: string): number {
-    return this.ratings[employeeId] || 0;
-  }
+// Get rating for employee
+getRating(employeeId: string): number | '' {
+  return this.ratings[employeeId] || '';
+}
 
   // Get remark for employee
   getRemark(employeeId: string): string {
     return this.remarks[employeeId] || '';
   }
 
-  // Check if star should be filled
-  isStarFilled(employeeId: string, starNumber: number): boolean {
-    return this.getRating(employeeId) >= starNumber;
-  }
 
   // Get status class for styling
   getStatusClass(status: string): string {
@@ -233,25 +237,55 @@ onSubmit(): void {
   this.http.post('https://192.168.0.22:8243/employee/rating/submit', submissionData, { headers })
     .subscribe({
       next: () => {
-        alert('Data submitted successfully!');
+        this.showCustomAlert('Data submitted successfully!');
        this.onReset();
       },
       error: (err) => {
         console.error('Error submitting evaluations', err);
-        alert('Error while submitting data!');
+        this.showCustomAlert('Error while submitting data!');
       }
     });
 }
   // Exit application
   onExit(): void {
-    if (confirm('Are you sure you want to exit?')) {
-    localStorage.clear();
-    window.location.href = 'https://login-ivory-tau.vercel.app/';
+    this.showCustomConfirm('Are you sure you want to exit?', () => {
+      localStorage.clear();
+      window.location.href = 'https://login-ivory-tau.vercel.app/';
+    });
   }
-}
 
   // Check if form is valid for submission
   isFormValid(): boolean {
     return this.selectedDate !== '' && this.employees.length > 0;
   }
+
+   // --- Custom Alert Methods ---
+  showCustomAlert(message: string): void {
+    this.alertMessage = message;
+    this.showAlert = true;
+  }
+
+  closeCustomAlert(): void {
+    this.showAlert = false;
+    this.alertMessage = '';
+  }
+
+  // --- Custom Confirm Methods ---
+  showCustomConfirm(message: string, callback: () => void): void {
+    this.confirmMessage = message;
+    this.confirmCallback = callback;
+    this.showConfirm = true;
+  }
+
+  confirmYes(): void {
+    if (this.confirmCallback) this.confirmCallback();
+    this.showConfirm = false;
+  }
+
+  confirmNo(): void {
+    this.showConfirm = false;
+    this.confirmMessage = '';
+    this.confirmCallback = null;
+  }
 }
+
